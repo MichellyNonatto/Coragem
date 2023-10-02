@@ -16,7 +16,7 @@ Arquivos de organização dos projetos de AOO, BD, LPIII e IHC.
 ### Contribuintes
 
 - [marcelo]()
-- [breatriz]()
+- [@Bea-Querubim](https://github.com/Bea-Querubim)
 ## Documentação da API
 
 #### Estrutara de pastas
