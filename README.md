@@ -17,13 +17,14 @@ Arquivos de organização dos projetos de AOO, BD, LPIII e IHC.
 
 - [@MarceloHribeiro](https://github.com/MarceloHribeiro)
 - [@Bea-Querubim](https://github.com/Bea-Querubim)
-## Documentação da API
-
-#### Link para prototipagem no Figma
+ 
+ <hr>
+ 
+### Link para prototipagem no Figma
 
 [Prototipagem | Coragem](https://www.figma.com/file/TAytYy3fJG3AGknbROCWOQ/CrechePetCoragem?type=design&node-id=54495%3A24451&mode=design&t=U9xMXSE8KXvCSpnV-1)
 
-#### Estrutura de pastas
+### Estrutura de pastas
 
 
 
