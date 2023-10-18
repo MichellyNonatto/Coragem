@@ -15,7 +15,7 @@ Arquivos de organização dos projetos de AOO, BD, LPIII e IHC.
 
 ### Contribuintes
 
-- [marcelo]()
+- [@MarceloHribeiro](https://github.com/MarceloHribeiro)
 - [@Bea-Querubim](https://github.com/Bea-Querubim)
 ## Documentação da API
 
