@@ -1,4 +1,3 @@
-select * from dataservico;
 select * from endereco;
 select * from funcao;
 select * from funcionario;
@@ -12,7 +11,7 @@ select * from registropagamento;
 select * from servicos;
 select * from usuario;
 select * from vacinacao;
-select * from vacinacao_has_historicodesaude;
+select * from vacina;
 
 
 
@@ -45,13 +44,13 @@ INSERT INTO raca (idRaca, nome, especie) VALUES
 (36, 'Dachshund', 'Cachorro');
 select * from raca;
 
-INSERT INTO historicoDeSaude (idhistoricoDeSaude, descricaoMedica)VALUES 
-(41, 'Cachorro Labrador saudável e pronto para entrar na creche.'),
-(42, 'Gato Siamese está com todas as vacinas em dia e sem problemas de saúde aparentes.'),
-(43, 'Cachorro Bulldog recebeu exames de rotina recentes e está em boa forma.'),
-(44, 'Gato Maine Coon está castrado e não apresenta problemas de saúde crônicos.'),
-(45, 'Cachorro Poodle tem um histórico de socialização positivo com outros animais.'),
-(46, 'Cachorro Dachshund tem uma personalidade tranquila e se dá bem com pessoas e outros animais.');
+INSERT INTO historicoDeSaude (idhistoricoDeSaude,castrado, descricaoMedica)VALUES 
+(41,sim, 'Cachorro Labrador saudável e pronto para entrar na creche.'),
+(42,sim, 'Gato Siamese está com todas as vacinas em dia e sem problemas de saúde aparentes.'),
+(43,sim, 'Cachorro Bulldog recebeu exames de rotina recentes e está em boa forma.'),
+(44,sim, 'Gato Maine Coon está castrado e não apresenta problemas de saúde crônicos.'),
+(45,sim, 'Cachorro Poodle tem um histórico de socialização positivo com outros animais.'),
+(46,sim, 'Cachorro Dachshund tem uma personalidade tranquila e se dá bem com pessoas e outros animais.');
 select * from historicoDeSaude;
 
 #tutores, 1,2,3,6
@@ -98,16 +97,6 @@ VALUES (81, 'Treinamento de Comportamento', 55.00, 72),
 (86, 'Agendamento taxiPet - levar', 15.00, 73);
 select * from servicos;
 
-#acho que esta errado
-INSERT INTO dataServico (idDataServico, tipo, diaServicoSemanal, frequenciaServicoSemanal, idServicos)
-VALUES 
-(91, 'Semanal', 1, 3, 81),
-(92, 'Semanal', 3, 1, 82),
-(93, 'Semanal', 5, 3, 83),
-(94, 'Mensal', 10, 2, 84),
-(95, 'Mensal', 20, 7, 85),
-(96, 'Mensal', 15, 7, 86);
-select * from dataServico;
 
 INSERT INTO registroPagamento (idRegistroPagamento, dataPagamento, tipo, idPagamento)
 VALUES (101, '2023-10-05', 'Pix', 61),
@@ -131,23 +120,24 @@ VALUES (61, 81),
 select * from pagamento_has_servicos;
 
 
-INSERT INTO vacinacao (idVacinacao, nome, dose, tempoDeEsperaEmMeses, idadeMinimaEmMeses)
-VALUES (111, 'V8', 1, 12, 6),
-(112, 'Raiva', 1, 12, 3),
-(113, 'Giardia', 2, 6, 8),
-(114, 'FIV', 1, 12, 4),
-(115, 'FeLV', 2, 6, 8),
-(119, 'Calicivírus', 1, 12, 6),
-(110, 'Hepatite Canina', 2, 6, 12);
+INSERT INTO vacina (idVacina, nome, dose, idadeMinimaEmMeses,tempoDeEsperaEmDias)
+VALUES (111, 'V8', 1, 12, 30),
+(112, 'Raiva', 1, 12, 365),
+(113, 'Giardia', 2, 6, 30),
+(114, 'FIV', 1, 12, 365),
+(115, 'FeLV', 2, 6, 30),
+(119, 'Calicivírus', 1, 12, 45),
+(110, 'Hepatite Canina', 2, 6, 30);
+select * from vacina;
+
+
+INSERT INTO vacinacao (vacina_idVacina, historicoDeSaude_idhistoricoDeSaude, dataVacinacao)
+VALUES (111, 41, "2023-01-02"),
+(112, 43,"2023-10-8"),
+(113, 46,"2023-08-12"),
+(114, 42,"2023-07-03"),
+(115, 44,"2023-06-25"),
+(111, 45,"2023-02-17"),
+(110, 41,"2023-03-20");
 select * from vacinacao;
 
-
-INSERT INTO vacinacao_has_historicoDeSaude (vacinacao_idVacinacao, historicoDeSaude_idhistoricoDeSaude)
-VALUES (111, 41),
-(112, 43),
-(113, 46),
-(114, 42),
-(115, 44),
-(111, 45),
-(110, 41);
-select * from vacinacao_has_historicoDeSaude;
