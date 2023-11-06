@@ -45,13 +45,13 @@ INSERT INTO raca (idRaca, nome, especie) VALUES
 select * from raca;
 
 INSERT INTO historicoDeSaude (idhistoricoDeSaude,castrado, descricaoMedica)VALUES 
-(41,sim, 'Cachorro Labrador saudável e pronto para entrar na creche.'),
-(42,sim, 'Gato Siamese está com todas as vacinas em dia e sem problemas de saúde aparentes.'),
-(43,sim, 'Cachorro Bulldog recebeu exames de rotina recentes e está em boa forma.'),
-(44,sim, 'Gato Maine Coon está castrado e não apresenta problemas de saúde crônicos.'),
-(45,sim, 'Cachorro Poodle tem um histórico de socialização positivo com outros animais.'),
-(46,sim, 'Cachorro Dachshund tem uma personalidade tranquila e se dá bem com pessoas e outros animais.');
-select * from historicoDeSaude;
+(41, 0, 'Cachorro Labrador saudável e pronto para entrar na creche.'),
+(42, 0, 'Gato Siamese está com todas as vacinas em dia e sem problemas de saúde aparentes.'),
+(43, 0, 'Cachorro Bulldog recebeu exames de rotina recentes e está em boa forma.'),
+(44, 0, 'Gato Maine Coon está castrado e não apresenta problemas de saúde crônicos.'),
+(45, 0, 'Cachorro Poodle tem um histórico de socialização positivo com outros animais.'),
+(46, 0, 'Cachorro Dachshund tem uma personalidade tranquila e se dá bem com pessoas e outros animais.');
+select * from historicoDeSaud
 
 #tutores, 1,2,3,6
 INSERT INTO pet (idPet, nome, dataNascimento, genero, idade, castrado, idUsuario, idRaca, idhistoricoDeSaude) VALUES 
