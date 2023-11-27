@@ -228,7 +228,7 @@ SELECT
     e.complemento,
     s.nome AS servico,
     s.valor,
-    s.diasDaSemana
+    converte_dias_da_semana(s.diasDaSemana) as DiasDaSemana
 FROM
     funcionario f
 JOIN
@@ -239,7 +239,6 @@ JOIN
     funcao fc ON f.idFuncao = fc.idFuncao
 JOIN
     servicos s ON f.idFuncionario = s.idFuncionario;
-
 
 -- Consultar a view
 SELECT * FROM vw_dados_funcionario;
@@ -363,14 +362,15 @@ select * from vw_total_servicos_por_tutores;
 /* nao esta funcionando */
 
 DELIMITER //
-CREATE PROCEDURE valor_total_por_tutor_pelo_id(tutor_id INT, OUT valorTotal DECIMAL(10,2))
+CREATE PROCEDURE valor_total_por_tutor_pelo_id(tutor_id INT, OUT valorTotalNew DECIMAL(10,2))
 BEGIN  
 	select * from vw_total_servicos_por_tutores WHERE idUsuario = tutor_id;
-    select valorTotal into valorTotal from vw_total_servicos_por_tutores WHERE idUsuario = tutor_id;
+    select valorTotal into valorTotalNew from vw_total_servicos_por_tutores WHERE idUsuario = tutor_id;
 END //
 DELIMITER ;
 
 CALL valor_total_por_tutor_pelo_id(1, @valorTotal);
+
 
 
 
@@ -396,12 +396,7 @@ END //
 DELIMITER ;
 
 call inserir_registro_pagamento('2023-10-05', "PIX", 1);
-
-drop PROCEDURE inserir_registro_pagamento;
-
 select * from registroPagamento;
-
-select * from pagamento;
 
 
 
@@ -469,4 +464,6 @@ SELECT * FROM vw_pets_por_turma;
 A fim de ter um melhor controle financeiro, um cliente deseja saber o custo total dos futuros serviços agendados. Faça uma query que exiba o valor total 
 de todos os serviços agendados para cada animal de um determinado cliente, caso possua mais de um.
 */
+
+
 
