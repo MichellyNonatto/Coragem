@@ -187,7 +187,6 @@ CREATE TABLE IF NOT EXISTS `mydb`.`registroPagamento` (
   `valorTotal` DECIMAL(10,2) NOT NULL,
   `tipo` ENUM("Pix", "Debito", "Credito", "Dinheiro") NULL,
   `idPagamento` INT NOT NULL,
-  `registroPagamentocol` VARCHAR(45) NULL,
   PRIMARY KEY (`idRegistroPagamento`),
   INDEX `fk_registroPagamento_pagamento1_idx` (`idPagamento` ASC) VISIBLE,
   CONSTRAINT `fk_registroPagamento_pagamento1`

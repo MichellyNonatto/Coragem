@@ -40,6 +40,51 @@ select * from servicos_has_turma;
 select * from turma;
 
 
+-- ------------------------------------------------------------------------------------
+-- Retornar dias da Semana baseado no set
+-- ------------------------------------------------------------------------------------
+DELIMITER //
+CREATE FUNCTION converte_dias_da_semana(dias VARCHAR(50))
+RETURNS VARCHAR(50) DETERMINISTIC
+BEGIN
+    DECLARE dias_abreviados VARCHAR(50);
+    DECLARE dia_numero INT;
+    DECLARE dias_semana VARCHAR(3);
+
+    SET dias_abreviados = '';
+
+    -- Itera sobre a lista de dias
+    WHILE CHAR_LENGTH(dias) > 0 DO
+        -- Obtém o primeiro número na lista
+        SET dia_numero = SUBSTRING_INDEX(dias, ',', 1);
+
+        -- Converte o número para o dia da semana abreviado
+        CASE dia_numero
+            WHEN '0' THEN SET dias_semana = 'seg';
+            WHEN '1' THEN SET dias_semana = 'ter';
+            WHEN '2' THEN SET dias_semana = 'qua';
+            WHEN '3' THEN SET dias_semana = 'qui';
+            WHEN '4' THEN SET dias_semana = 'sex';
+            WHEN '5' THEN SET dias_semana = 'sab';
+            WHEN '6' THEN SET dias_semana = 'dom';
+            ELSE SET dias_semana = 'inválido';
+        END CASE;
+
+        -- Adiciona o dia abreviado à string resultante
+        SET dias_abreviados = CONCAT(dias_abreviados, dias_semana, ',');
+
+        -- Remove o número processado da lista
+        SET dias = SUBSTRING(dias, CHAR_LENGTH(dia_numero) + 2);
+    END WHILE;
+
+    -- Remove a vírgula extra no final, se houver
+    SET dias_abreviados = TRIM(TRAILING ',' FROM dias_abreviados);
+
+    RETURN dias_abreviados;
+END //
+DELIMITER ;
+
+
 
 -- ------------------------------------------------------------------------------------
 -- Trigger para Garantir que Pets sejam cadastrados somente em tutores
@@ -299,21 +344,64 @@ GROUP BY t.idTurma;
 select * from vw_total_servicos;
 
 -- ------------------------------------------------------------------------------------
+-- Calcular valor total de serviços utilizados pelos tutores
+-- ------------------------------------------------------------------------------------
+
+CREATE VIEW vw_total_servicos_por_tutores AS
+SELECT u.idUsuario, u.nome, SUM(t.valorTotal) AS valorTotal
+FROM usuario u
+INNER JOIN pet p ON u.idUsuario = p.idUsuario
+INNER JOIN turma t ON t.idTurma = p.turma_idTurma
+GROUP BY u.idUsuario;
+
+select * from vw_total_servicos_por_tutores;
+
+-- ------------------------------------------------------------------------------------
 -- Calcular valor total de serviços utilizados por tutor pelo ID
 -- ------------------------------------------------------------------------------------
 
 /* nao esta funcionando */
 
 DELIMITER //
-CREATE PROCEDURE valor_total_por_tutor(tutor_id INT)
+CREATE PROCEDURE valor_total_por_tutor_pelo_id(tutor_id INT, OUT valorTotal DECIMAL(10,2))
 BEGIN  
-	SELECT * FROM vw_total_servicos WHERE idUsuario = tutor_id;
+	select * from vw_total_servicos_por_tutores WHERE idUsuario = tutor_id;
+    select valorTotal into valorTotal from vw_total_servicos_por_tutores WHERE idUsuario = tutor_id;
 END //
 DELIMITER ;
 
-CALL valor_total_por_tutor(1);
+CALL valor_total_por_tutor_pelo_id(1, @valorTotal);
 
 
+
+-- ------------------------------------------------------------------------------------
+-- Inserir registro de pagamento
+-- ------------------------------------------------------------------------------------
+DELIMITER //
+CREATE PROCEDURE inserir_registro_pagamento(dataPagamento DATE, tipo ENUM("Pix", "Debito", "Credito", "Dinheiro"), idUsuario INT)
+BEGIN
+	DECLARE valorTotal DECIMAL(10,2);
+    DECLARE idPagamentoNew INT;
+    
+    -- Capturar valorTotal do Tutor
+    CALL valor_total_por_tutor_pelo_id(idUsuario, valorTotal);
+    
+    -- Capturar idPagamento do Tutor
+    SELECT idPagamento INTO idPagamentoNew FROM pagamento where usuario_idUsuario = idUsuario;
+    
+    INSERT INTO registroPagamento VALUES
+    (idRegistroPagamento, dataPagamento, valorTotal, tipo, idPagamentoNew);
+
+END //
+DELIMITER ;
+
+call inserir_registro_pagamento('2023-10-05', "PIX", 1);
+
+drop PROCEDURE inserir_registro_pagamento;
+
+select * from registroPagamento;
+
+select * from pagamento;
 
 
 
