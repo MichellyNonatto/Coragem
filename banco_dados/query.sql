@@ -269,14 +269,36 @@ CALL valor_total_por_tutor(1);
 
 /*
 1- Faça uma query listando todas as especies de cada raça.	Faça uma query listando todos os funcionários bem como sua função e o serviço prestado.
+
+especies é um enum, acredito que a query deveria ser: Faça uma query listando todas as raças de cada especie.
+a segunda query ja foi feita ali encima.
 */
 
+DELIMITER //
+CREATE PROCEDURE racas_por_especie()
+BEGIN
+	select * from raca where especie = "Cachorro";
+	select * from raca where especie = "Gato";
+END //
+DELIMITER ;
 
+call racas_por_especie();
 
 
 /*
 2- Faça uma query para calcular o total de pagamentos de um usuário	Faça uma query para listar todos os pets pertencentes a um usuário específico
+
+a primeira ja foi feita ali encima
 */
+
+DELIMITER //
+CREATE PROCEDURE pets_por_tutor(id_tutor int)
+BEGIN
+	select u.nome, p.nome from usuario u join pet p on u.idUsuario = p.idUsuario where u.idUsuario = id_tutor;
+END //
+DELIMITER ;
+
+call pets_por_tutor(1);
 
 /*
 3- Faça uma query que exiba o total de animais atendidos em um periodo determinado.	Faça uma query que exiba o tempo de cada atendimento
