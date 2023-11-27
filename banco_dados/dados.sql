@@ -60,13 +60,13 @@ INSERT INTO turma (nome) VALUES
 select * from turma;
 
 #tutores, 1,2,3,6
-INSERT INTO pet (nome, dataNascimento, genero, castrado, historicoDeSaude, idUsuario, idRaca, turma_idTurma) VALUES 
-('Rex', '2020-05-15', 'Macho', 1, 'Cachorro Labrador saudável e pronto para entrar na creche.', 1, 1, 2),
-('Luna', '2019-08-10', 'Femea', 1, 'Gato Siamese está com todas as vacinas em dia e sem problemas de saúde aparentes.', 1, 2, 1),
-('Bobby', '2018-12-01', 'Macho', 1, 'Cachorro Bulldog recebeu exames de rotina recentes e está em boa forma.', 2, 1, 2),
-('Cacau', '2020-03-20', 'Femea', 0, 'Gato Maine Coon está castrado e não apresenta problemas de saúde crônicos.', 2, 4, 1),
-('Max', '2019-06-05', 'Macho', 1, 'Cachorro Poodle tem um histórico de socialização positivo com outros animais.', 3, 5, 2),
-('Rocky', '2020-01-25', 'Macho', 1, 'Cachorro Dachshund tem uma personalidade tranquila e se dá bem com pessoas e outros animais.', 6, 6, 3);
+INSERT INTO pet (nome, dataNascimento, genero, castrado, dataInicio, historicoDeSaude, idUsuario, idRaca, turma_idTurma) VALUES 
+('Rex', '2020-05-15', 'Macho', 1, '2023-10-10', 'Cachorro Labrador saudável e pronto para entrar na creche.', 1, 1, 2),
+('Luna', '2019-08-10', 'Femea', 1, '2023-11-01', 'Gato Siamese está com todas as vacinas em dia e sem problemas de saúde aparentes.', 1, 2, 1),
+('Bobby', '2018-12-01', 'Macho', 1, '2023-09-10', 'Cachorro Bulldog recebeu exames de rotina recentes e está em boa forma.', 2, 1, 2),
+('Cacau', '2020-03-20', 'Femea', 0, '2023-10-10', 'Gato Maine Coon está castrado e não apresenta problemas de saúde crônicos.', 2, 4, 1),
+('Max', '2019-06-05', 'Macho', 1, '2023-06-10', 'Cachorro Poodle tem um histórico de socialização positivo com outros animais.', 3, 5, 2),
+('Rocky', '2020-01-25', 'Macho', 1, '2023-08-05', 'Cachorro Dachshund tem uma personalidade tranquila e se dá bem com pessoas e outros animais.', 6, 6, 3);
 select * from pet;
 
 INSERT INTO vacina (idVacina, nome, dose, idadeMinimaEmMeses,tempoDeEsperaEmDias) VALUES

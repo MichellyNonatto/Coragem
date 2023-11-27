@@ -69,12 +69,12 @@ select * from usuario;
 select * from pet;
 
 # idUsuario é funcionário
-INSERT INTO pet (nome, dataNascimento, genero, castrado, historicoDeSaude, idUsuario, idRaca, turma_idTurma) VALUES 
-('Poly', '2020-05-15', 'Femea', 1, null, 4, 2, 1);
+INSERT INTO pet (nome, dataNascimento, genero, castrado, dataInicio, historicoDeSaude, idUsuario, idRaca, turma_idTurma) VALUES 
+('Poly', '2020-05-15', 'Femea', 1, curdate(), null, 4, 2, 1);
 
 # idUsuario é tutor
-INSERT INTO pet (nome, dataNascimento, genero, castrado, historicoDeSaude, idUsuario, idRaca, turma_idTurma) VALUES 
-('Poly', '2020-05-15', 'Femea', 1, null, 2, 2, 1);
+INSERT INTO pet (nome, dataNascimento, genero, castrado, dataInicio, historicoDeSaude, idUsuario, idRaca, turma_idTurma) VALUES 
+('Poly', '2020-05-15', 'Femea', 1, curdate(), null, 2, 2, 1);
 
 
 -- ------------------------------------------------------------------------------------
@@ -210,7 +210,7 @@ BEGIN
 END //
 DELIMITER ;
 
-CALL dados_funcionario_pelo_id(1);
+CALL dados_funcionario_pelo_id(@idFuncionarioCriado);
 
 
 
@@ -275,7 +275,7 @@ CALL dados_tutor_pelo_id(1);
 
 CREATE VIEW vw_total_servicos AS
 SELECT 
-	turma, SUM(s.valor) AS total
+	t.nome, SUM(s.valor) AS total
 FROM
 	turma t
 		JOIN
@@ -296,25 +296,24 @@ FROM
 	servicos s ON s.idServicos = st.servicos_idServicos
 GROUP BY t.idTurma;
 
-
+select * from vw_total_servicos;
 
 -- ------------------------------------------------------------------------------------
 -- Calcular valor total de serviços utilizados por tutor pelo ID
 -- ------------------------------------------------------------------------------------
 
+/* nao esta funcionando */
+
 DELIMITER //
 CREATE PROCEDURE valor_total_por_tutor(tutor_id INT)
 BEGIN  
-	select * from vw_total_servicos where idUsuario = tutor_id;
+	SELECT * FROM vw_total_servicos WHERE idUsuario = tutor_id;
 END //
 DELIMITER ;
 
 CALL valor_total_por_tutor(1);
 
 
-
-    
-    
 
 
 
@@ -331,8 +330,8 @@ a segunda query ja foi feita ali encima.
 DELIMITER //
 CREATE PROCEDURE racas_por_especie()
 BEGIN
-	select * from raca where especie = "Cachorro";
-	select * from raca where especie = "Gato";
+	SELECT * FROM raca WHERE especie = "Cachorro";
+	SELECT * FROM raca WHERE especie = "Gato";
 END //
 DELIMITER ;
 
@@ -348,15 +347,34 @@ a primeira ja foi feita ali encima
 DELIMITER //
 CREATE PROCEDURE pets_por_tutor(id_tutor int)
 BEGIN
-	select u.nome, p.nome from usuario u join pet p on u.idUsuario = p.idUsuario where u.idUsuario = id_tutor;
+	SELECT u.nome, p.nome
+	FROM usuario u
+	JOIN pet p ON u.idUsuario = p.idUsuario
+	WHERE u.idUsuario = id_tutor;
 END //
 DELIMITER ;
 
-call pets_por_tutor(1);
+CALL pets_por_tutor(1);
+
+
 
 /*
 3- Faça uma query que exiba o total de animais atendidos em um periodo determinado.	Faça uma query que exiba o tempo de cada atendimento
+
+No nosso projeto, não estamos contabilizando tempo de atendimento, ou datas de um atendimento,
+mas é possível retornar a quantidade de pets cadastrados em determinada turma, como no exemplo abaixo
 */
+
+
+CREATE VIEW vw_pets_por_turma AS
+    SELECT t.nome, COUNT(p.idPet) AS total
+    FROM turma t
+	JOIN pet p ON t.idTurma = p.turma_idTurma
+    GROUP BY t.nome;
+
+SELECT * FROM vw_pets_por_turma;
+
+
 
 /*
 4- Faça uma query que liste os serviços marcados, as datas de cada serviço e o id do funcionário responsável pelo serviço para um animal específico.	

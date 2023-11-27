@@ -80,6 +80,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`pet` (
   `dataNascimento` DATE NOT NULL,
   `genero` ENUM("Macho", "Femea") NOT NULL,
   `castrado` TINYINT NOT NULL,
+  `dataInicio` DATE NOT NULL,
   `historicoDeSaude` VARCHAR(200) NULL,
   `idUsuario` INT NOT NULL,
   `idRaca` INT NOT NULL,
