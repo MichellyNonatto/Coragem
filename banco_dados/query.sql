@@ -1,6 +1,47 @@
 /* Querys Oficiais */
 
 -- ------------------------------------------------------------------------------------
+-- Trigger para atualizar o valorTotal da turma quando um novo serviço é associado
+-- ------------------------------------------------------------------------------------
+DELIMITER //
+CREATE TRIGGER atualizar_valor_total_turma
+AFTER INSERT ON servicos_has_turma
+FOR EACH ROW
+BEGIN
+    DECLARE valor_servico DECIMAL(10,2);
+
+    -- Obter o valor do serviço inserido
+    SELECT valor INTO valor_servico
+    FROM servicos
+    WHERE idServicos = NEW.servicos_idServicos;
+
+    -- Atualizar o valorTotal da turma
+    UPDATE turma
+    SET valorTotal = valorTotal + valor_servico
+    WHERE idturma = NEW.turma_idTurma;
+END //
+DELIMITER ;
+
+
+INSERT INTO servicos_has_turma (servicos_idServicos, turma_idTurma) VALUES
+(1, 1),
+(2, 1),
+(3, 1),
+(5, 1),
+(1, 2),
+(2, 2),
+(3, 2),
+(4, 2),
+(1, 3),
+(2, 3),
+(4, 3),
+(5, 3);
+select * from servicos_has_turma;
+select * from turma;
+
+
+
+-- ------------------------------------------------------------------------------------
 -- Trigger para Garantir que Pets sejam cadastrados somente em tutores
 -- ------------------------------------------------------------------------------------
 
@@ -28,12 +69,12 @@ select * from usuario;
 select * from pet;
 
 # idUsuario é funcionário
-INSERT INTO pet (nome, dataNascimento, genero, castrado, historicoDeSaude, idUsuario, idRaca) VALUES 
-('Poly', '2020-05-15', 'Femea', 1, null, 4, 2);
+INSERT INTO pet (nome, dataNascimento, genero, castrado, historicoDeSaude, idUsuario, idRaca, turma_idTurma) VALUES 
+('Poly', '2020-05-15', 'Femea', 1, null, 4, 2, 1);
 
 # idUsuario é tutor
-INSERT INTO pet (nome, dataNascimento, genero, castrado, historicoDeSaude, idUsuario, idRaca) VALUES 
-('Poly', '2020-05-15', 'Femea', 1, null, 2, 2);
+INSERT INTO pet (nome, dataNascimento, genero, castrado, historicoDeSaude, idUsuario, idRaca, turma_idTurma) VALUES 
+('Poly', '2020-05-15', 'Femea', 1, null, 2, 2, 1);
 
 
 -- ------------------------------------------------------------------------------------
@@ -169,7 +210,7 @@ BEGIN
 END //
 DELIMITER ;
 
-CALL dados_funcionario_pelo_id(71);
+CALL dados_funcionario_pelo_id(1);
 
 
 
@@ -191,6 +232,7 @@ SELECT
     e.rua,
     e.numero,
     e.complemento,
+    pa.diaVencimento,
 	p.nome AS nome_pet,
     p.genero,
     CASE p.castrado
@@ -206,7 +248,9 @@ JOIN
 JOIN
     endereco e ON u.idEndereco = e.idEndereco
 JOIN
-	raca r ON p.idRaca = r.idRaca;
+	raca r ON p.idRaca = r.idRaca
+JOIN
+	PAGAMENTO pa ON pa.usuario_idUsuario = u.idUsuario;
 
 select * from vw_dados_tutores;
 
@@ -226,23 +270,33 @@ CALL dados_tutor_pelo_id(1);
 
 
 -- ------------------------------------------------------------------------------------
--- Calcular valor total de serviços utilizados por tutor
+-- Calcular valor total por turma
 -- ------------------------------------------------------------------------------------
 
 CREATE VIEW vw_total_servicos AS
 SELECT 
-	u.idUsuario, u.nome, SUM(s.valor) AS total
+	turma, SUM(s.valor) AS total
 FROM
-	usuario u
+	turma t
 		JOIN
-	pet p ON p.idUsuario = u.idUsuario
+	servicos_has_turma st ON st.turma_idTurma = t.idTurma
 		JOIN
-	grade g ON g.idPet = p.idPet
-		JOIN
-	servicos s ON g.idServicos = s.idServicos
-GROUP BY u.idUsuario;
+	servicos s ON s.idServicos = st.servicos_idServicos
+GROUP BY t.idTurma;
 
 select * from vw_total_servicos;
+
+SELECT 
+	t.nome, SUM(s.valor) AS total
+FROM
+	turma t
+		JOIN
+	servicos_has_turma st ON st.turma_idTurma = t.idTurma
+		JOIN
+	servicos s ON s.idServicos = st.servicos_idServicos
+GROUP BY t.idTurma;
+
+
 
 -- ------------------------------------------------------------------------------------
 -- Calcular valor total de serviços utilizados por tutor pelo ID
