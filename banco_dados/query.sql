@@ -172,6 +172,99 @@ DELIMITER ;
 CALL dados_funcionario_pelo_id(71);
 
 
+
+-- ------------------------------------------------------------------------------------
+-- Exibir dados completos dos tutores
+-- ------------------------------------------------------------------------------------
+
+CREATE VIEW vw_dados_tutores AS
+SELECT
+	u.idUsuario,
+    u.nome,
+    u.telefone,
+    u.documento,
+    u.email,
+    e.cep,
+    e.estado,
+    e.cidade,
+    e.bairro,
+    e.rua,
+    e.numero,
+    e.complemento,
+	p.nome AS nome_pet,
+    p.genero,
+    CASE p.castrado
+        WHEN 1 THEN 'Sim'
+        WHEN 0 THEN 'Não'
+    END AS castrado,
+    r.nome AS raca,
+    r.especie
+FROM
+    usuario u
+JOIN
+    pet p ON u.idUsuario = p.idUsuario
+JOIN
+    endereco e ON u.idEndereco = e.idEndereco
+JOIN
+	raca r ON p.idRaca = r.idRaca;
+
+select * from vw_dados_tutores;
+
+
+-- ------------------------------------------------------------------------------------
+-- Exibir dados completos do tutor pelo ID
+-- ------------------------------------------------------------------------------------
+
+DELIMITER //
+CREATE PROCEDURE dados_tutor_pelo_id(tutor_id INT)
+BEGIN
+	SELECT * FROM vw_dados_tutores WHERE idUsuario = tutor_id;
+END //
+DELIMITER ;
+
+CALL dados_tutor_pelo_id(1);
+
+
+-- ------------------------------------------------------------------------------------
+-- Calcular valor total de serviços utilizados por tutor
+-- ------------------------------------------------------------------------------------
+
+CREATE VIEW vw_total_servicos AS
+SELECT 
+	u.idUsuario, u.nome, SUM(s.valor) AS total
+FROM
+	usuario u
+		JOIN
+	pet p ON p.idUsuario = u.idUsuario
+		JOIN
+	grade g ON g.idPet = p.idPet
+		JOIN
+	servicos s ON g.idServicos = s.idServicos
+GROUP BY u.idUsuario;
+
+select * from vw_total_servicos;
+
+-- ------------------------------------------------------------------------------------
+-- Calcular valor total de serviços utilizados por tutor pelo ID
+-- ------------------------------------------------------------------------------------
+
+DELIMITER //
+CREATE PROCEDURE valor_total_por_tutor(tutor_id INT)
+BEGIN  
+	select * from vw_total_servicos where idUsuario = tutor_id;
+END //
+DELIMITER ;
+
+CALL valor_total_por_tutor(1);
+
+
+
+    
+    
+
+
+
+
 /* Querys Passadas */
 
 /*

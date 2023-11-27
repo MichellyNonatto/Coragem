@@ -13,7 +13,6 @@ select * from vacinacao;
 select * from vacina;
 
 
-
 INSERT INTO endereco (cep, estado, cidade, bairro, rua, numero, complemento) VALUES 
 (12345678, 'SP', 'Bragança Paulista', 'Centro', 'Rua A', '123', 'Apto 1'),
 (98765432, 'SP', 'Bragança Paulista', 'Jardim Bela Vista', 'Avenida B', '456', 'Bloco 2'),
@@ -129,3 +128,14 @@ VALUES (111, 51, "2023-01-02"),
 (110, 56,"2023-03-20");
 select * from vacinacao;
 
+
+select * from servicos;
+select * from pet;
+
+INSERT INTO grade (idServicos, idPet) VALUES
+(81, 51),
+(83, 51),
+(84, 52),
+(81, 52),
+(81, 53),
+(81, 54);
