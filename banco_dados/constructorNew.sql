@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`usuario` (
   `idUsuario` INT NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(100) NOT NULL,
   `telefone` INT(12) NOT NULL,
-  `documento` INT(15) ZEROFILL NOT NULL,
+  `documento` BIGINT NOT NULL,
   `email` VARCHAR(45) NULL,
   `categoria` ENUM("Tutor", "Funcionario") NOT NULL,
   `idEndereco` INT NOT NULL,

@@ -2,7 +2,6 @@ select * from endereco;
 select * from funcao;
 select * from funcionario;
 select * from grade;
-select * from historicodesaude;
 select * from pagamento;
 select * from pagamento_has_servicos;
 select * from pet;
@@ -26,13 +25,13 @@ INSERT INTO endereco (cep, estado, cidade, bairro, rua, numero, complemento) VAL
 select * from endereco;
 
 INSERT INTO usuario (nome, telefone, documento, email, categoria, idEndereco) VALUES
-('João da Silva', 1122334455, 449856325, 'joao@email.com', 'Tutor', 1),
-('Maria Souza', 998877665, 987654321, 'maria@email.com', 'Tutor', 2),
-('Carlos Pereira', 987766554, 567890120, 'carlos@email.com', 'Tutor', 3),
-('Pedro Fernandes', 983456789, 234567890, 'pedro@email.com', 'Funcionario', 4),
-('Ana Oliveira', 967890123, 543210980, 'ana@email.com', 'Funcionario', 5),
-('Luis Santos', 987654321, 876543210, 'luis@email.com', 'Tutor', 6),
-('Isabel Lima', 976543210, 345678900, 'isabel@email.com', 'Funcionario', 7);
+('João da Silva', 1122334455, 44985632511, 'joao@email.com', 'Tutor', 1),
+('Maria Souza', 998877665, 98765432122, 'maria@email.com', 'Tutor', 2),
+('Carlos Pereira', 987766554, 56789012033, 'carlos@email.com', 'Tutor', 3),
+('Pedro Fernandes', 983456789, 23456789044, 'pedro@email.com', 'Funcionario', 4),
+('Ana Oliveira', 967890123, 54321098055, 'ana@email.com', 'Funcionario', 5),
+('Luis Santos', 987654321, 87654321066, 'luis@email.com', 'Tutor', 6),
+('Isabel Lima', 976543210, 34567890077, 'isabel@email.com', 'Funcionario', 7);
 select * from usuario;
 
 INSERT INTO raca (nome, especie) VALUES 
@@ -80,12 +79,12 @@ select * from funcionario;
 
 
 INSERT INTO servicos (idServicos, nome, valor, diasDaSemana, idFuncionario)
-VALUES (81, 'Treinamento de Comportamento', 55.00, '0, 1, 2', 72),
-(82, 'Consulta de Emergência', 75.00, '1, 3', 71),
-(83, 'Banho e Tosa', 50.00, '0, 1, 2, 3, 4', 71),
-(84, 'Adestramento Individual', 60.00, '0, 2, 4', 72),
-(85, 'Agendamento taxiPet - buscar', 15.00, '0, 1, 2, 3, 4', 73),
-(86, 'Agendamento taxiPet - levar', 15.00, '0, 1, 2, 3, 4', 73);
+VALUES (81, 'Treinamento de Comportamento', 55.00, '0,1,2', 72),
+(82, 'Consulta de Emergência', 75.00, '1,3', 71),
+(83, 'Banho e Tosa', 50.00, '0, 1,2,3,4', 71),
+(84, 'Adestramento Individual', 60.00, '0,2,4', 72),
+(85, 'Agendamento taxiPet - buscar', 15.00, '0,1,2,3,4', 73),
+(86, 'Agendamento taxiPet - levar', 15.00, '0,1,2,3,4', 73);
 select * from servicos;
 
 INSERT INTO registroPagamento (idRegistroPagamento, dataPagamento, tipo, idPagamento)
