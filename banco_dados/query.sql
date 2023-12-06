@@ -40,6 +40,49 @@ select * from servicos_has_turma;
 select * from turma;
 
 
+-- ------------------------------------------------------------------------------------
+-- Retornar dias da Semana baseado no set
+-- ------------------------------------------------------------------------------------
+DELIMITER //
+CREATE FUNCTION converte_dias_da_semana(dias VARCHAR(50))
+RETURNS VARCHAR(50) DETERMINISTIC
+BEGIN
+    DECLARE dias_abreviados VARCHAR(50);
+    DECLARE dia_numero INT;
+    DECLARE dias_semana VARCHAR(3);
+
+    SET dias_abreviados = '';
+
+    -- Itera sobre a lista de dias
+    WHILE CHAR_LENGTH(dias) > 0 DO
+        -- Obtém o primeiro número na lista
+        SET dia_numero = SUBSTRING_INDEX(dias, ',', 1);
+
+        -- Converte o número para o dia da semana abreviado
+        CASE dia_numero
+            WHEN '0' THEN SET dias_semana = 'seg';
+            WHEN '1' THEN SET dias_semana = 'ter';
+            WHEN '2' THEN SET dias_semana = 'qua';
+            WHEN '3' THEN SET dias_semana = 'qui';
+            WHEN '4' THEN SET dias_semana = 'sex';
+            WHEN '5' THEN SET dias_semana = 'sab';
+            WHEN '6' THEN SET dias_semana = 'dom';
+            ELSE SET dias_semana = 'inválido';
+        END CASE;
+
+        -- Adiciona o dia abreviado à string resultante
+        SET dias_abreviados = CONCAT(dias_abreviados, dias_semana, ',');
+
+        -- Remove o número processado da lista
+        SET dias = SUBSTRING(dias, CHAR_LENGTH(dia_numero) + 2);
+    END WHILE;
+
+    -- Remove a vírgula extra no final, se houver
+    SET dias_abreviados = TRIM(TRAILING ',' FROM dias_abreviados);
+
+    RETURN dias_abreviados;
+END //
+DELIMITER ;
 
 -- ------------------------------------------------------------------------------------
 -- Trigger para Garantir que Pets sejam cadastrados somente em tutores
@@ -183,21 +226,16 @@ SELECT
     e.complemento,
     s.nome AS servico,
     s.valor,
-    s.diasDaSemana
-FROM
-    funcionario f
-JOIN
-    usuario u ON f.idUsuario = u.idUsuario
-JOIN
-    endereco e ON u.idEndereco = e.idEndereco
-JOIN 
-    funcao fc ON f.idFuncao = fc.idFuncao
-JOIN
-    servicos s ON f.idFuncionario = s.idFuncionario;
-
+    converte_dias_da_semana(s.diasDaSemana) as DiasDaSemana
+FROM funcionario f
+JOIN usuario u ON f.idUsuario = u.idUsuario
+JOIN endereco e ON u.idEndereco = e.idEndereco
+JOIN funcao fc ON f.idFuncao = fc.idFuncao
+JOIN servicos s ON f.idFuncionario = s.idFuncionario;
 
 -- Consultar a view
 SELECT * FROM vw_dados_funcionario;
+
 
 -- ------------------------------------------------------------------------------------
 -- Exibir dados completos de um funcionário pelo seu ID
@@ -212,6 +250,21 @@ DELIMITER ;
 
 CALL dados_funcionario_pelo_id(@idFuncionarioCriado);
 
+
+-- ------------------------------------------------------------------------------------
+-- Retornar Sim -> 1 e Nao -> 0
+-- ------------------------------------------------------------------------------------
+
+DELIMITER //
+CREATE FUNCTION return_sim_ou_nao(valueBoolean tinyint)
+RETURNS varchar(3) DETERMINISTIC
+BEGIN
+	CASE valueBoolean
+        WHEN 1 THEN RETURN 'Sim';
+        WHEN 0 THEN RETURN 'Não';
+    END CASE;
+END //
+DELIMITER ;
 
 
 -- ------------------------------------------------------------------------------------
@@ -235,22 +288,14 @@ SELECT
     pa.diaVencimento,
 	p.nome AS nome_pet,
     p.genero,
-    CASE p.castrado
-        WHEN 1 THEN 'Sim'
-        WHEN 0 THEN 'Não'
-    END AS castrado,
+    return_sim_ou_nao(p.castrado) AS castrado,
     r.nome AS raca,
     r.especie
-FROM
-    usuario u
-JOIN
-    pet p ON u.idUsuario = p.idUsuario
-JOIN
-    endereco e ON u.idEndereco = e.idEndereco
-JOIN
-	raca r ON p.idRaca = r.idRaca
-JOIN
-	PAGAMENTO pa ON pa.usuario_idUsuario = u.idUsuario;
+FROM usuario u
+JOIN pet p ON u.idUsuario = p.idUsuario
+JOIN endereco e ON u.idEndereco = e.idEndereco
+JOIN raca r ON p.idRaca = r.idRaca
+JOIN PAGAMENTO pa ON pa.usuario_idUsuario = u.idUsuario;
 
 select * from vw_dados_tutores;
 
@@ -274,29 +319,35 @@ CALL dados_tutor_pelo_id(1);
 -- ------------------------------------------------------------------------------------
 
 CREATE VIEW vw_total_servicos AS
-SELECT 
-	t.nome, SUM(s.valor) AS total
-FROM
-	turma t
-		JOIN
-	servicos_has_turma st ON st.turma_idTurma = t.idTurma
-		JOIN
-	servicos s ON s.idServicos = st.servicos_idServicos
+SELECT t.nome, SUM(s.valor) AS total
+FROM turma t
+JOIN servicos_has_turma st ON st.turma_idTurma = t.idTurma
+JOIN servicos s ON s.idServicos = st.servicos_idServicos
 GROUP BY t.idTurma;
 
 select * from vw_total_servicos;
 
-SELECT 
-	t.nome, SUM(s.valor) AS total
-FROM
-	turma t
-		JOIN
-	servicos_has_turma st ON st.turma_idTurma = t.idTurma
-		JOIN
-	servicos s ON s.idServicos = st.servicos_idServicos
+SELECT t.nome, SUM(s.valor) AS total
+FROM turma t
+JOIN servicos_has_turma st ON st.turma_idTurma = t.idTurma
+JOIN servicos s ON s.idServicos = st.servicos_idServicos
 GROUP BY t.idTurma;
 
 select * from vw_total_servicos;
+
+
+-- ------------------------------------------------------------------------------------
+-- Calcular valor total de serviços utilizados pelos tutores
+-- ------------------------------------------------------------------------------------
+
+CREATE VIEW vw_total_servicos_por_tutores AS
+SELECT u.idUsuario, u.nome, SUM(t.valorTotal) AS valorTotal
+FROM usuario u
+INNER JOIN pet p ON u.idUsuario = p.idUsuario
+INNER JOIN turma t ON t.idTurma = p.turma_idTurma
+GROUP BY u.idUsuario;
+
+select * from vw_total_servicos_por_tutores;
 
 -- ------------------------------------------------------------------------------------
 -- Calcular valor total de serviços utilizados por tutor pelo ID
@@ -305,16 +356,39 @@ select * from vw_total_servicos;
 /* nao esta funcionando */
 
 DELIMITER //
-CREATE PROCEDURE valor_total_por_tutor(tutor_id INT)
+CREATE PROCEDURE valor_total_por_tutor_pelo_id(tutor_id INT, OUT valorTotalNew DECIMAL(10,2))
 BEGIN  
-	SELECT * FROM vw_total_servicos WHERE idUsuario = tutor_id;
+	select * from vw_total_servicos_por_tutores WHERE idUsuario = tutor_id;
+    select valorTotal into valorTotalNew from vw_total_servicos_por_tutores WHERE idUsuario = tutor_id;
 END //
 DELIMITER ;
 
-CALL valor_total_por_tutor(1);
+CALL valor_total_por_tutor_pelo_id(1, @valorTotal);
 
 
+-- ------------------------------------------------------------------------------------
+-- Inserir registro de pagamento
+-- ------------------------------------------------------------------------------------
+DELIMITER //
+CREATE PROCEDURE inserir_registro_pagamento(dataPagamento DATE, tipo ENUM("Pix", "Debito", "Credito", "Dinheiro"), idUsuario INT)
+BEGIN
+	DECLARE valorTotal DECIMAL(10,2);
+    DECLARE idPagamentoNew INT;
+    
+    -- Capturar valorTotal do Tutor
+    CALL valor_total_por_tutor_pelo_id(idUsuario, valorTotal);
+    
+    -- Capturar idPagamento do Tutor
+    SELECT idPagamento INTO idPagamentoNew FROM pagamento where usuario_idUsuario = idUsuario;
+    
+    INSERT INTO registroPagamento VALUES
+    (idRegistroPagamento, dataPagamento, valorTotal, tipo, idPagamentoNew);
 
+END //
+DELIMITER ;
+
+call inserir_registro_pagamento('2023-10-05', "PIX", 1);
+select * from registroPagamento;
 
 
 
@@ -365,7 +439,6 @@ No nosso projeto, não estamos contabilizando tempo de atendimento, ou datas de 
 mas é possível retornar a quantidade de pets cadastrados em determinada turma, como no exemplo abaixo
 */
 
-
 CREATE VIEW vw_pets_por_turma AS
     SELECT t.nome, COUNT(p.idPet) AS total
     FROM turma t
@@ -375,10 +448,40 @@ CREATE VIEW vw_pets_por_turma AS
 SELECT * FROM vw_pets_por_turma;
 
 
-
 /*
 4- Faça uma query que liste os serviços marcados, as datas de cada serviço e o id do funcionário responsável pelo serviço para um animal específico.	
 A fim de ter um melhor controle financeiro, um cliente deseja saber o custo total dos futuros serviços agendados. Faça uma query que exiba o valor total 
 de todos os serviços agendados para cada animal de um determinado cliente, caso possua mais de um.
 */
+
+DELIMITER //
+CREATE PROCEDURE servicos_do_pet(pet_id INT)
+BEGIN
+	SELECT p.nome, t.nome AS NomeDaTurma, s.nome, CONVERTE_DIAS_DA_SEMANA(s.diasDaSemana) AS DiasDaSemana, u.nome AS nomeFuncionario
+	FROM pet p
+	INNER JOIN turma t ON p.turma_idTurma = t.idTurma
+	INNER JOIN servicos_has_turma st ON st.turma_idTurma = t.idTurma
+	INNER JOIN servicos s ON s.idServicos = st.servicos_idServicos
+	INNER JOIN funcionario f ON s.idFuncionario = f.idFuncionario
+	INNER JOIN usuario u ON u.idUsuario = f.idUsuario
+	WHERE idPet = pet_id;
+END //
+DELIMITER ;
+
+CALL servicos_do_pet(1);
+
+DELIMITER //
+CREATE PROCEDURE valor_pet_por_tutor(tutor_id INT)
+BEGIN
+	SELECT u.nome, p.nome as nomePet, t.valorTotal
+	FROM usuario u
+	INNER JOIN pet p ON u.idUsuario = p.idUsuario
+	INNER JOIN turma t ON t.idTurma = p.turma_idTurma
+	WHERE u.idUsuario = tutor_id;
+END //
+DELIMITER ;
+
+call valor_pet_por_tutor(2);
+
+
 
