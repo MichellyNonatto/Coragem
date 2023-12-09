@@ -31,8 +31,7 @@ Arquivos de organização dos projetos de AOO, BD, LPIII e IHC.
 | Nome   | Curso       | Descrição                                   |
 | :---------- | :--------- | :------------------------------------------ |
 | `documentacao`      | `AOO` | Documentação e estruturação da creche pet. |
-|`telas`|`IHC`|Desenvolvimento da prototipagem, identidade e organização de telas da creche pet.|
-|`ideia_tela`|`Não há uma matéria especifica`|Imagens utilizadas como inspiração/auxilio para a prototipação do projeto.|
+|`usabilidade`|`IHC`|Desenvolvimento e teste da prototipagem, identidade e organização de telas da creche pet.|
 |`banco_dados`|`Banco de Dados`|Estruturação do DER, minimundo e informações de teste.|
 
 
